@@ -84,6 +84,7 @@ def run_test(test_number):
             
             # 出力をクルーに変換
             output_clues = output_to_clues(output_grid)
+            print(f"rush-01から出力: {output_clues}")
             
             # 入力クルーと出力クルーを比較
             if input_clues == output_clues:
