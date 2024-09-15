@@ -50,21 +50,24 @@ def format_for_rush01(grid):
     
     return ' '.join(map(str, clues))
 
+def output_to_clues(output_grid):
+    return format_for_rush01(output_grid)
+
 def run_test(test_number):
     N = 4
     latin_square = generate_latin_square(N)
     
     if latin_square:
-        clues = format_for_rush01(latin_square)
+        input_clues = format_for_rush01(latin_square)
         print(f"\nテスト {test_number}:")
         print("生成されたラテン方格:")
         for row in latin_square:
             print(' '.join(map(str, row)))
         
-        print(f"\nrush-01への入力: {clues}")
+        print(f"\nrush-01への入力: {input_clues}")
         
         start_time = time.time()
-        result = subprocess.run(['./rush-01', clues], capture_output=True, text=True)
+        result = subprocess.run(['./rush-01', input_clues], capture_output=True, text=True)
         end_time = time.time()
         execution_time = end_time - start_time
         
@@ -79,11 +82,16 @@ def run_test(test_number):
             # rush-01の出力を解析して2次元配列に変換
             output_grid = [list(map(int, line.split())) for line in result.stdout.strip().split('\n')]
             
-            # 元のラテン方格と比較
-            if output_grid == latin_square:
+            # 出力をクルーに変換
+            output_clues = output_to_clues(output_grid)
+            
+            # 入力クルーと出力クルーを比較
+            if input_clues == output_clues:
                 return "成功", execution_time
             else:
-                print("rush-01の出力が元のラテン方格と一致しません。")
+                print("rush-01の出力クルーが入力クルーと一致しません。")
+                print(f"入力クルー: {input_clues}")
+                print(f"出力クルー: {output_clues}")
                 return "不一致", execution_time
     return "生成失敗", 0
 
