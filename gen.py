@@ -1,0 +1,94 @@
+import subprocess
+import itertools
+from collections import Counter
+import random
+
+def is_valid(grid, row, col, num):
+    for x in range(col):
+        if grid[row][x] == num:
+            return False
+    for x in range(row):
+        if grid[x][col] == num:
+            return False
+    return True
+
+def generate_latin_square(N):
+    grid = [[0 for _ in range(N)] for _ in range(N)]
+    
+    def backtrack(row, col):
+        if row == N:
+            return grid
+        if col == N:
+            return backtrack(row + 1, 0)
+        numbers = list(range(1, N + 1))
+        random.shuffle(numbers)  # ランダムな順序で数字を試す
+        for num in numbers:
+            if is_valid(grid, row, col, num):
+                grid[row][col] = num
+                if backtrack(row, col + 1):
+                    return grid
+                grid[row][col] = 0
+        return None
+
+    return backtrack(0, 0)
+
+def format_for_rush01(grid):
+    N = len(grid)
+    clues = []
+    
+    for col in range(N):
+        clues.append(len([x for x in range(N) if all(grid[i][col] < grid[x][col] for i in range(x))]))
+    
+    for col in range(N):
+        clues.append(len([x for x in range(N-1, -1, -1) if all(grid[i][col] < grid[x][col] for i in range(N-1, x, -1))]))
+    
+    for row in range(N):
+        clues.append(len([x for x in range(N) if all(grid[row][i] < grid[row][x] for i in range(x))]))
+    
+    for row in range(N):
+        clues.append(len([x for x in range(N-1, -1, -1) if all(grid[row][i] < grid[row][x] for i in range(N-1, x, -1))]))
+    
+    return ' '.join(map(str, clues))
+
+def run_test(test_number):
+    N = 4
+    latin_square = generate_latin_square(N)
+    
+    if latin_square:
+        clues = format_for_rush01(latin_square)
+        print(f"\nテスト {test_number}:")
+        print("生成されたラテン方格:")
+        for row in latin_square:
+            print(' '.join(map(str, row)))
+        
+        print(f"\nrush-01への入力: {clues}")
+        
+        try:
+            result = subprocess.run(['./rush-01', clues], capture_output=True, text=True, check=True)
+            print("\nrush-01の出力:")
+            print(result.stdout)
+            return "成功"
+        except subprocess.CalledProcessError as e:
+            print(f"\nrush-01の実行中にエラーが発生しました: {e}")
+            print(f"エラー出力: {e.stderr}")
+            return "エラー"
+    return "生成失敗"
+
+def main():
+    num_tests = 576
+    results = Counter()
+
+    print("テスト開始...")
+    for i in range(num_tests):
+        result = run_test(i + 1)
+        results[result] += 1
+
+    print("\n最終結果:")
+    print(f"テスト回数: {num_tests}")
+    print(f"成功: {results['成功']}")
+    print(f"エラー: {results['エラー']}")
+    print(f"生成失敗: {results['生成失敗']}")
+    print(f"最終成功率: {results['成功'] / num_tests * 100:.2f}%")
+
+if __name__ == "__main__":
+    main()
