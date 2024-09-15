@@ -1,7 +1,7 @@
 import subprocess
-import itertools
 from collections import Counter
 import random
+import time
 
 def is_valid(grid, row, col, num):
     for x in range(col):
@@ -63,25 +63,35 @@ def run_test(test_number):
         
         print(f"\nrush-01への入力: {clues}")
         
+        start_time = time.time()
         result = subprocess.run(['./rush-01', clues], capture_output=True, text=True)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        
         print("\nrush-01の出力:")
         print(result.stdout)
+        print(f"実行時間: {execution_time:.6f}秒")
         
         if 'Error' in result.stdout:
             print("rush-01がエラーを返しました。")
-            return "エラー"
+            return "エラー", execution_time
         else:
-            return "成功"
-    return "生成失敗"
+            return "成功", execution_time
+    return "生成失敗", 0
 
 def main():
     num_tests = 576
     results = Counter()
+    total_time = 0
+    successful_times = []
 
     print("テスト開始...")
     for i in range(num_tests):
-        result = run_test(i + 1)
+        result, execution_time = run_test(i + 1)
         results[result] += 1
+        if result == "成功":
+            total_time += execution_time
+            successful_times.append(execution_time)
 
     print("\n最終結果:")
     print(f"テスト回数: {num_tests}")
@@ -89,6 +99,12 @@ def main():
     print(f"エラー: {results['エラー']}")
     print(f"生成失敗: {results['生成失敗']}")
     print(f"最終成功率: {results['成功'] / num_tests * 100:.2f}%")
+    
+    if successful_times:
+        avg_time = sum(successful_times) / len(successful_times)
+        print(f"平均実行時間: {avg_time:.6f}秒")
+        print(f"最短実行時間: {min(successful_times):.6f}秒")
+        print(f"最長実行時間: {max(successful_times):.6f}秒")
 
 if __name__ == "__main__":
     main()
