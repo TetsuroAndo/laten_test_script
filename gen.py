@@ -63,15 +63,15 @@ def run_test(test_number):
         
         print(f"\nrush-01への入力: {clues}")
         
-        try:
-            result = subprocess.run(['./rush-01', clues], capture_output=True, text=True, check=True)
-            print("\nrush-01の出力:")
-            print(result.stdout)
-            return "成功"
-        except subprocess.CalledProcessError as e:
-            print(f"\nrush-01の実行中にエラーが発生しました: {e}")
-            print(f"エラー出力: {e.stderr}")
+        result = subprocess.run(['./rush-01', clues], capture_output=True, text=True)
+        print("\nrush-01の出力:")
+        print(result.stdout)
+        
+        if 'Error' in result.stdout:
+            print("rush-01がエラーを返しました。")
             return "エラー"
+        else:
+            return "成功"
     return "生成失敗"
 
 def main():
