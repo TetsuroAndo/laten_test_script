@@ -59,7 +59,7 @@ def run_test(test_number):
     
     if latin_square:
         input_clues = format_for_rush01(latin_square)
-        print(f"\nテスト {test_number}:")
+        print(f"\n=================\n\nテスト {test_number}:")
         print("生成されたラテン方格:")
         for row in latin_square:
             print(' '.join(map(str, row)))
@@ -109,7 +109,7 @@ def main():
             total_time += execution_time
             successful_times.append(execution_time)
 
-    print("\n最終結果:")
+    print("\n=================\n\n最終結果:")
     print(f"テスト回数: {num_tests}")
     print(f"成功: {results['成功']}")
     print(f"エラー: {results['エラー']}")
