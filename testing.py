@@ -76,7 +76,15 @@ def run_test(test_number):
             print("rush-01がエラーを返しました。")
             return "エラー", execution_time
         else:
-            return "成功", execution_time
+            # rush-01の出力を解析して2次元配列に変換
+            output_grid = [list(map(int, line.split())) for line in result.stdout.strip().split('\n')]
+            
+            # 元のラテン方格と比較
+            if output_grid == latin_square:
+                return "成功", execution_time
+            else:
+                print("rush-01の出力が元のラテン方格と一致しません。")
+                return "不一致", execution_time
     return "生成失敗", 0
 
 def main():
