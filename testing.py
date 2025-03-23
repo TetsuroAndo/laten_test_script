@@ -53,8 +53,7 @@ def format_for_rush01(grid):
 def output_to_clues(output_grid):
     return format_for_rush01(output_grid)
 
-def run_test(test_number):
-    N = 4
+def run_test(test_number, N=4):
     latin_square = generate_latin_square(N)
     
     if latin_square:
@@ -97,14 +96,27 @@ def run_test(test_number):
     return "生成失敗", 0
 
 def main():
-    num_tests = 576
+    size = int(input("グリッドサイズを選択してください (4-9の範囲): "))
+    if size < 4 or size > 9:
+        print("サイズは4から9の範囲で選択してください。")
+        return
+    
+    # グリッドサイズが大きくなるほどテスト数を減らす
+    num_tests = {
+        4: 576,
+        5: 100,
+        6: 25,
+        7: 10,
+        8: 5,
+        9: 3
+    }[size]
     results = Counter()
     total_time = 0
     successful_times = []
 
     print("テスト開始...")
     for i in range(num_tests):
-        result, execution_time = run_test(i + 1)
+        result, execution_time = run_test(i + 1, size)
         results[result] += 1
         if result == "成功":
             total_time += execution_time
